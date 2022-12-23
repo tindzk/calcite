@@ -360,11 +360,6 @@ parser: {
   nonReservedKeywordsToAdd: [
   ]
 
-  # List of non-reserved keywords to remove;
-  # items in this list become reserved.
-  nonReservedKeywordsToRemove: [
-  ]
-
   # List of additional join types. Each is a method with no arguments.
   # Example: "LeftSemiJoin".
   joinTypes: [

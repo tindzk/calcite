@@ -585,7 +585,7 @@ public class SqlParserTest {
 
   protected static final SqlDialect BIG_QUERY =
       SqlDialect.DatabaseProduct.BIG_QUERY.getDialect();
-  private static final SqlDialect CALCITE =
+  protected static final SqlDialect CALCITE =
       SqlDialect.DatabaseProduct.CALCITE.getDialect();
   private static final SqlDialect MSSQL =
       SqlDialect.DatabaseProduct.MSSQL.getDialect();
@@ -593,7 +593,7 @@ public class SqlParserTest {
       SqlDialect.DatabaseProduct.MYSQL.getDialect();
   private static final SqlDialect ORACLE =
       SqlDialect.DatabaseProduct.ORACLE.getDialect();
-  private static final SqlDialect POSTGRESQL =
+  protected static final SqlDialect POSTGRESQL =
       SqlDialect.DatabaseProduct.POSTGRESQL.getDialect();
   private static final SqlDialect REDSHIFT =
       SqlDialect.DatabaseProduct.REDSHIFT.getDialect();
@@ -10376,6 +10376,13 @@ public class SqlParserTest {
         + "FROM `EMP`\n"
         + "/*+ `OPTIONS`('key1' = 'val1') */";
     assertThat(toLinux(shuttled.toString()), is(expected));
+  }
+
+  @Test void testAsCountFails() {
+    // By default, COUNT is a reserved keyword. However, this query would be valid in
+    // the PostgreSQL dialect.
+    final String sql = "select true as ^count^";
+    sql(sql).fails("(?s).*Encountered \"count\" at line 1.*");
   }
 
   @Test void testInvalidHintFormat() {

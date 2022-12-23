@@ -332,6 +332,22 @@ class BabelParserTest extends SqlParserTest {
         .ok("SELECT (ARRAY['a', 'b'])");
   }
 
+  @Test void testAsCalcite() {
+    final SqlParserFixture f = fixture().withDialect(CALCITE);
+    f.sql("select 1 as count")
+        .ok("SELECT 1 AS \"COUNT\"");
+    f.sql("select 1 as as")
+        .ok("SELECT 1 AS \"AS\"");
+  }
+
+  @Test void testAsPostgreSql() {
+    final SqlParserFixture f = fixture().withDialect(POSTGRESQL);
+    f.sql("select 1 as count")
+        .ok("SELECT 1 AS \"count\"");
+    f.sql("select 1 as as")
+        .ok("SELECT 1 AS \"as\"");
+  }
+
   /** Similar to {@link #testHoist()} but using custom parser. */
   @Test void testHoistMySql() {
     // SQL contains back-ticks, which require MySQL's quoting,
