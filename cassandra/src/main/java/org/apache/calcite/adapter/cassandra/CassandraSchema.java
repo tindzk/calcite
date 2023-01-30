@@ -87,14 +87,14 @@ public class CassandraSchema extends AbstractSchema {
    *
    * @param session a Cassandra session
    * @param parentSchema the parent schema
+   * @param keyspace the keyspace name
    * @param name the schema name
    */
-  public CassandraSchema(CqlSession session, SchemaPlus parentSchema, String name) {
+  public CassandraSchema(CqlSession session, SchemaPlus parentSchema, String keyspace, String name) {
     super();
+
     this.session = session;
-    this.keyspace = session.getKeyspace()
-        .orElseThrow(() -> new RuntimeException("No keyspace for session " + session.getName()))
-        .asInternal();
+    this.keyspace = keyspace;
     this.parentSchema = parentSchema;
     this.name = name;
     this.hook = prepareHook();
@@ -323,11 +323,11 @@ public class CassandraSchema extends AbstractSchema {
     final ImmutableMap.Builder<String, Table> builder = ImmutableMap.builder();
     for (TableMetadata table : getKeyspace().getTables().values()) {
       String tableName = table.getName().asInternal();
-      builder.put(tableName, new CassandraTable(this, tableName));
+      builder.put(tableName, new CassandraTable(this, keyspace, tableName));
 
       for (ViewMetadata view : getKeyspace().getViewsOnTable(table.getName()).values()) {
         String viewName = view.getName().asInternal();
-        builder.put(viewName, new CassandraTable(this, viewName, true));
+        builder.put(viewName, new CassandraTable(this, keyspace, viewName, true));
       }
     }
     return builder.build();

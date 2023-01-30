@@ -58,10 +58,12 @@ public class CassandraTable extends AbstractQueryableTable
   List<String> partitionKeys;
   List<String> clusteringKeys;
   List<RelFieldCollation> clusteringOrder;
+  private final String keyspace;
   private final String columnFamily;
 
-  public CassandraTable(CassandraSchema schema, String columnFamily, boolean isView) {
+  public CassandraTable(CassandraSchema schema, String keyspace, String columnFamily, boolean isView) {
     super(Object[].class);
+    this.keyspace = keyspace;
     this.columnFamily = columnFamily;
     this.protoRowType = schema.getRelDataType(columnFamily, isView);
     this.partitionKeys = schema.getPartitionKeys(columnFamily, isView);
@@ -69,8 +71,8 @@ public class CassandraTable extends AbstractQueryableTable
     this.clusteringOrder = schema.getClusteringOrder(columnFamily, isView);
   }
 
-  public CassandraTable(CassandraSchema schema, String columnFamily) {
-    this(schema, columnFamily, false);
+  public CassandraTable(CassandraSchema schema, String keyspace, String columnFamily) {
+    this(schema, keyspace, columnFamily, false);
   }
 
   @Override public String toString() {
@@ -170,6 +172,8 @@ public class CassandraTable extends AbstractQueryableTable
     StringBuilder queryBuilder = new StringBuilder("SELECT ");
     queryBuilder.append(selectString)
         .append(" FROM \"")
+        .append(keyspace)
+        .append("\".\"")
         .append(columnFamily)
         .append("\"")
         .append(whereClause);

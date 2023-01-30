@@ -84,7 +84,13 @@ public class CassandraSchemaFactory implements SchemaFactory {
       }
     });
 
-    return new CassandraSchema(INFO_TO_SESSION.get(sessionMap), parentSchema, name);
+    CqlSession session = INFO_TO_SESSION.get(sessionMap);
+
+    String keyspace = session.getKeyspace()
+      .orElseThrow(() -> new RuntimeException("No keyspace for session " + session.getName()))
+      .asInternal();
+
+    return new CassandraSchema(session, parentSchema, keyspace, name);
   }
 
   private static Map<String, Object> projectMapOverKeys(
