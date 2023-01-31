@@ -41,7 +41,7 @@ class CassandraAdapterWithoutKeyspaceTest {
   @BeforeAll
   static void load(CqlSession session) {
     new CQLDataLoader(session)
-        .load(new ClassPathCQLDataSet("twissandra.cql"));
+        .load(new ClassPathCQLDataSet("twissandra_small.cql"));
   }
 
   @Test void testSelect() {
