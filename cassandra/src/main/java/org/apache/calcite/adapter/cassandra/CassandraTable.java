@@ -170,7 +170,8 @@ public class CassandraTable extends AbstractQueryableTable
 
     // Build and issue the query and return an Enumerator over the results
     StringBuilder queryBuilder = new StringBuilder("SELECT ");
-    queryBuilder.append(selectString)
+    queryBuilder
+        .append(selectString)
         .append(" FROM \"")
         .append(keyspace)
         .append("\".\"")

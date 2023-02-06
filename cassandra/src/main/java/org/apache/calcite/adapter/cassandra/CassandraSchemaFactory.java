@@ -93,7 +93,7 @@ public class CassandraSchemaFactory implements SchemaFactory {
 
     String keyspace = session.getKeyspace()
         .map(CqlIdentifier::asInternal)
-        .orElse(null);
+        .orElse(name);
 
     return new CassandraSchema(session, parentSchema, keyspace);
   }

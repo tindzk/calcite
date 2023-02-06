@@ -73,7 +73,6 @@ import java.util.stream.IntStream;
  */
 public class CassandraSchema extends AbstractSchema {
   final CqlSession session;
-  @Nullable
   final String keyspace;
   private final SchemaPlus parentSchema;
   final Hook.Closeable hook;
@@ -90,7 +89,7 @@ public class CassandraSchema extends AbstractSchema {
    * @param parentSchema the parent schema
    * @param keyspace the keyspace name
    */
-  public CassandraSchema(CqlSession session, SchemaPlus parentSchema, @Nullable String keyspace) {
+  public CassandraSchema(CqlSession session, SchemaPlus parentSchema, String keyspace) {
     super();
 
     this.session = session;
@@ -333,10 +332,6 @@ public class CassandraSchema extends AbstractSchema {
   }
 
   private KeyspaceMetadata getKeyspace() {
-    if (keyspace == null) {
-      return ImmutableMap.of();
-    }
-
     return session.getMetadata().getKeyspace(keyspace).orElseThrow(
         () -> new RuntimeException("Keyspace " + keyspace + " not found"));
   }
