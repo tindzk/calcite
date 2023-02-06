@@ -58,6 +58,7 @@ import com.google.common.collect.ImmutableMap;
 
 import org.slf4j.Logger;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -72,9 +73,9 @@ import java.util.stream.IntStream;
  */
 public class CassandraSchema extends AbstractSchema {
   final CqlSession session;
+  @Nullable
   final String keyspace;
   private final SchemaPlus parentSchema;
-  final String name;
   final Hook.Closeable hook;
 
   static final CqlToSqlTypeConversionRules CQL_TO_SQL_TYPE =
@@ -88,15 +89,13 @@ public class CassandraSchema extends AbstractSchema {
    * @param session a Cassandra session
    * @param parentSchema the parent schema
    * @param keyspace the keyspace name
-   * @param name the schema name
    */
-  public CassandraSchema(CqlSession session, SchemaPlus parentSchema, String keyspace, String name) {
+  public CassandraSchema(CqlSession session, SchemaPlus parentSchema, @Nullable String keyspace) {
     super();
 
     this.session = session;
     this.keyspace = keyspace;
     this.parentSchema = parentSchema;
-    this.name = name;
     this.hook = prepareHook();
   }
 
@@ -304,9 +303,9 @@ public class CassandraSchema extends AbstractSchema {
 
       // Add the view for this query
       String viewName = "$" + getTableNames().size();
-      SchemaPlus schema = parentSchema.getSubSchema(name);
+      SchemaPlus schema = parentSchema.getSubSchema(keyspace);
       if (schema == null) {
-        throw new IllegalStateException("Cannot find schema " + name
+        throw new IllegalStateException("Cannot find schema " + keyspace
             + " in parent schema " + parentSchema.getName());
       }
       CalciteSchema calciteSchema = CalciteSchema.from(schema);
@@ -334,6 +333,10 @@ public class CassandraSchema extends AbstractSchema {
   }
 
   private KeyspaceMetadata getKeyspace() {
+    if (keyspace == null) {
+      return ImmutableMap.of();
+    }
+
     return session.getMetadata().getKeyspace(keyspace).orElseThrow(
         () -> new RuntimeException("Keyspace " + keyspace + " not found"));
   }
